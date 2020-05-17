@@ -1,5 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#pragma once
+
 #include "AC_OpenDoor.h"
 #include "Engine/World.h"
 #include "GameFramework/Actor.h"
@@ -14,6 +16,20 @@ UAC_OpenDoor::UAC_OpenDoor()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	// ...
+}
+
+// Called every frame
+void UAC_OpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction)
+{
+    Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+    switch (State)
+    {
+    case DoorState::Opening:
+    case DoorState::Closing:
+        AnimateDoor(DeltaTime);
+        break;
+    }
 }
 
 // Called when the game starts
@@ -32,43 +48,6 @@ void UAC_OpenDoor::BeginPlay()
 
 	InitialYaw = GetOwner()->GetActorRotation().Yaw;
 	ResetDoor();
-}
-
-// Called every frame
-void UAC_OpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	if (Trigger && Trigger->IsOverlappingActor(ActorThatOpens))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("%s"), *GetOwner()->GetActorRotation().ToString());
-		UE_LOG(LogTemp, Warning, TEXT("Yaw is: %f"), GetOwner()->GetActorRotation().Yaw);
-
-		if (!HasJustEntered) {
-			switch (State)
-			{
-			case DoorState::Open:
-				CloseDoor();
-				break;
-			case DoorState::Closed:
-				OpenDoor();
-				break;
-			}
-			HasJustEntered = true;
-		}
-	}
-	else
-	{
-		HasJustEntered = false;
-	}
-
-	switch (State)
-	{
-	case DoorState::Opening:
-	case DoorState::Closing:
-		AnimateDoor(DeltaTime);
-		break;
-	}
 }
 
 void UAC_OpenDoor::ResetDoor()
@@ -90,11 +69,11 @@ void UAC_OpenDoor::AnimateDoor(float DeltaTime)
 {
 	float CurrentYaw = GetOwner()->GetActorRotation().Yaw;
 
-	FRotator OpenDoor{0.f, FMath::FInterpTo(CurrentYaw, TargetYaw, DeltaTime, 1.f), 0.f};
+	FRotator OpenDoor{0.f, FMath::FInterpTo(CurrentYaw, TargetYaw, DeltaTime, SpeedFactor), 0.f};
 
 	GetOwner()->SetActorRotation(OpenDoor);
 
-	if (FMath::IsNearlyEqual(CurrentYaw, TargetYaw, 0.1f))
+	if (FMath::IsNearlyEqual(CurrentYaw, TargetYaw, 3.f))
 	{
 		switch (State)
 		{
