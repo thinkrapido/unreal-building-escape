@@ -1,7 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#pragma once
-
 #include "AC_OpenDoor.h"
 #include "Engine/World.h"
 #include "GameFramework/Actor.h"
@@ -21,15 +19,15 @@ UAC_OpenDoor::UAC_OpenDoor()
 // Called every frame
 void UAC_OpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction)
 {
-    Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-    switch (State)
-    {
-    case DoorState::Opening:
-    case DoorState::Closing:
-        AnimateDoor(DeltaTime);
-        break;
-    }
+	switch (State)
+	{
+	case DoorState::Opening:
+	case DoorState::Closing:
+		AnimateDoor(DeltaTime);
+		break;
+	}
 }
 
 // Called when the game starts
