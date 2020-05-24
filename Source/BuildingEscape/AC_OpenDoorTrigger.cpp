@@ -10,9 +10,6 @@ void UAC_OpenDoorTrigger::TickComponent(float DeltaTime, ELevelTick TickType, FA
 
     if (Trigger && Trigger->IsOverlappingActor(ActorThatOpens))
     {
-        UE_LOG(LogTemp, Warning, TEXT("%s"), *GetOwner()->GetActorRotation().ToString());
-        UE_LOG(LogTemp, Warning, TEXT("Yaw is: %f"), GetOwner()->GetActorRotation().Yaw);
-
         OpenDoor();
         Timeout = GetWorld()->GetTimeSeconds() + WaitDelay;
     }
