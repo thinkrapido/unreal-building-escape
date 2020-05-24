@@ -51,9 +51,6 @@ protected:
 	UPROPERTY(EditAnywhere)
 	ATriggerVolume *Trigger = nullptr;
 
-	UPROPERTY(EditAnywhere)
-	AActor *ActorThatOpens = nullptr;
-
 	void ResetDoor();
 	void CloseDoor();
 	void OpenDoor();

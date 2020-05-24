@@ -39,10 +39,6 @@ void UAC_OpenDoor::BeginPlay()
 	{
 		UE_LOG(LogTemp, Error, TEXT("%s has the open door component on it, but no preassure plate set"), *GetOwner()->GetName());
 	}
-	if (!ActorThatOpens)
-	{
-		ActorThatOpens = GetWorld()->GetFirstPlayerController()->GetPawn();
-	}
 
 	InitialYaw = GetOwner()->GetActorRotation().Yaw;
 	ResetDoor();
