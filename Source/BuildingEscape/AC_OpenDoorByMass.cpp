@@ -31,8 +31,6 @@ bool UAC_OpenDoorByMass::HasMassAccumulated() const
     TArray<AActor*> OverlappingActors;
     Trigger->GetOverlappingActors(OUT OverlappingActors);
 
-    UE_LOG(LogTemp, Warning, TEXT("Overlapping Actors: %d"), OverlappingActors.Num());
-
     for (AActor* Actor : OverlappingActors)
     {
         auto Component = Actor->FindComponentByClass<UPrimitiveComponent>();
@@ -41,7 +39,6 @@ bool UAC_OpenDoorByMass::HasMassAccumulated() const
             Mass += Component->GetMass();
         }
     }
-    UE_LOG(LogTemp, Warning, TEXT("Overlapping Actors: %d"), Mass);
 
     return Mass >= MassToOpen;
 

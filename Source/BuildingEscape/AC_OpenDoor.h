@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Components/ActorComponent.h"
+#include "Components/AudioComponent.h"
 #include "CoreMinimal.h"
 #include "Engine/TriggerVolume.h"
 #include "AC_OpenDoor.generated.h"
@@ -36,7 +37,6 @@ protected:
 	float TargetYaw = 0.f;
 	float InitialYaw = 0.f;
 	DoorState State = DoorState::Closed;
-	bool HasJustEntered = false;
 
 
 	UPROPERTY(EditAnywhere, Meta = (CampMin = "0.001", ClampMax = "100.0"))
@@ -50,6 +50,9 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	ATriggerVolume *Trigger = nullptr;
+
+	UAudioComponent *Audio = nullptr;
+	void FindAudioComponent();
 
 	void ResetDoor();
 	void CloseDoor();

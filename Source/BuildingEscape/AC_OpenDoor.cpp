@@ -21,13 +21,7 @@ void UAC_OpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	switch (State)
-	{
-	case DoorState::Opening:
-	case DoorState::Closing:
-		AnimateDoor(DeltaTime);
-		break;
-	}
+	AnimateDoor(DeltaTime);
 }
 
 // Called when the game starts
@@ -42,6 +36,17 @@ void UAC_OpenDoor::BeginPlay()
 
 	InitialYaw = GetOwner()->GetActorRotation().Yaw;
 	ResetDoor();
+
+	FindAudioComponent();
+}
+
+void UAC_OpenDoor::FindAudioComponent()
+{
+	Audio = GetOwner()->FindComponentByClass<UAudioComponent>();
+	if (!Audio)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No audio component avialable for %s."), *GetOwner()->GetName());
+	}
 }
 
 void UAC_OpenDoor::ResetDoor()
@@ -51,34 +56,66 @@ void UAC_OpenDoor::ResetDoor()
 }
 void UAC_OpenDoor::CloseDoor()
 {
+	switch (State)
+	{
+	case DoorState::Closed:
+	case DoorState::Closing:
+		return;
+	}
+
+
 	TargetYaw = InitialYaw;
 	State = DoorState::Closing;
 }
 void UAC_OpenDoor::OpenDoor()
 {
-	TargetYaw = InitialYaw + TargetAngle * (OpenInward ? 1.0 : -1.0);
+	switch (State)
+	{
+	case DoorState::Open:
+	case DoorState::Opening:
+		return;
+	}
+
+	TargetYaw = InitialYaw + TargetAngle * (OpenInward ? 1.0f : -1.0f);
 	State = DoorState::Opening;
+
+	if (Audio && !Audio->IsPlaying())
+	{
+		Audio->Play();
+	}
 }
 void UAC_OpenDoor::AnimateDoor(float DeltaTime)
 {
-	float CurrentYaw = GetOwner()->GetActorRotation().Yaw;
-
-	FRotator OpenDoor{0.f, FMath::FInterpTo(CurrentYaw, TargetYaw, DeltaTime, SpeedFactor), 0.f};
-
-	GetOwner()->SetActorRotation(OpenDoor);
-
-	if (FMath::IsNearlyEqual(CurrentYaw, TargetYaw, 3.f))
+	switch (State)
 	{
-		switch (State)
+	case DoorState::Opening:
+	case DoorState::Closing:
+		float CurrentYaw = GetOwner()->GetActorRotation().Yaw;
+
+		FRotator OpenDoor{0.f, FMath::FInterpTo(CurrentYaw, TargetYaw, DeltaTime, SpeedFactor), 0.f};
+
+		GetOwner()->SetActorRotation(OpenDoor);
+
+		//UE_LOG(LogTemp, Warning, TEXT("open %f, %f %s."), CurrentYaw, TargetYaw, *GetOwner()->GetName());
+		if (FMath::IsNearlyEqual(CurrentYaw, TargetYaw, 3.f))
 		{
-		case DoorState::Closing:
-			State = DoorState::Closed;
-			break;
-		case DoorState::Opening:
-			State = DoorState::Open;
-			break;
-		default:
-			break;
+			switch (State)
+			{
+			case DoorState::Closing:
+				State = DoorState::Closed;
+
+				if (Audio && !Audio->IsPlaying())
+				{
+					Audio->Play();
+				}
+				break;
+			case DoorState::Opening:
+				State = DoorState::Open;
+				break;
+			default:
+				break;
+			}
 		}
+		break;
 	}
 }

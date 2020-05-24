@@ -17,6 +17,8 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+	bool HasJustEntered = false;
+
 	UPROPERTY(EditAnywhere)
 	AActor *ActorThatOpens = nullptr;
 };

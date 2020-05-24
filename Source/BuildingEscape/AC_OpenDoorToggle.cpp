@@ -15,9 +15,11 @@ void UAC_OpenDoorToggle::TickComponent(float DeltaTime, ELevelTick TickType, FAc
             {
             case DoorState::Open:
                 CloseDoor();
+		UE_LOG(LogTemp, Warning, TEXT("close %s."), *GetOwner()->GetName());
                 break;
             case DoorState::Closed:
                 OpenDoor();
+		UE_LOG(LogTemp, Warning, TEXT("open %s."), *GetOwner()->GetName());
                 break;
             }
             HasJustEntered = true;
